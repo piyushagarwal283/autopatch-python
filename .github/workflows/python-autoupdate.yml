@@ -1,1 +1,37 @@
-.github/workflows/python-autoupdate.yml
+name: Auto Update Python Dependencies
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday 12 PM
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install tools
+        run: |
+          pip install pip-review safety
+
+      - name: Auto-update and scan
+        run: |
+          pip-review --auto
+          pip freeze > requirements.txt
+          safety check -r requirements.txt > report.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'actions@github.com'
+          git add requirements.txt report.txt
+          git commit -m 'Auto updated Python dependencies [bot]'
+          git push
