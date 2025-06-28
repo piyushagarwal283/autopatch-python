@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 12 * * 1'
+  
   workflow_dispatch:
 
 
@@ -30,7 +29,8 @@ jobs:
         run: |
           pip-review --auto
           pip freeze > requirements.txt
-          safety check -r requirements.txt > report.txt
+          safety check -r requirements.txt --no-tty > report.txt
+
 
       - name: Commit changes
         run: |
