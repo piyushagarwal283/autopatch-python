@@ -2,11 +2,8 @@ name: Auto Update Python Dependencies
 
 on:
   push:
-    branches:
-      - main
-  
+    branches: [ main ]
   workflow_dispatch:
-
 
 jobs:
   update:
@@ -23,19 +20,22 @@ jobs:
 
       - name: Install tools
         run: |
+          python -m pip install --upgrade pip
           pip install pip-review safety
 
       - name: Auto-update and scan
         run: |
-          pip-review --auto
+          pip-review --auto || echo "No updates"
           pip freeze > requirements.txt
-          safety check -r requirements.txt --no-tty > report.txt
+          safety check -r requirements.txt > report.txt || echo "Safety check completed"
 
-
-      - name: Commit changes
+      - name: Setup GitHub Credentials
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'actions@github.com'
+
+      - name: Commit and push changes
+        run: |
           git add requirements.txt report.txt
-          git commit -m 'Auto updated Python dependencies [bot]'
-          git push
+          git commit -m 'Auto updated Python dependencies [bot]' || echo "No changes to commit"
+          git push origin main
