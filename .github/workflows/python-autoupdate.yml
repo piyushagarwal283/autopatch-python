@@ -26,6 +26,10 @@ jobs:
           pip install --upgrade pip
           pip install pip-audit
           pip-audit -r requirements.txt > audit-report.txt || true
+          
+      - name: Run pip-audit and save to file
+        run: pip-audit -r requirements.txt > audit-report.txt
+
 
       - name: Commit audit report to repo
         run: |
