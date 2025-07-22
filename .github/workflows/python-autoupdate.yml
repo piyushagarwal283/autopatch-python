@@ -1,4 +1,4 @@
-name: pip-audit
+name: audit
 
 on:
   push:
@@ -11,30 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: Create and activate virtual environment
-        run: |
-          python -m venv audit-env
-          source audit-env/bin/activate
-          pip install --upgrade pip
-          pip install pip-audit
-          pip-audit -r requirements.txt > audit-report.txt || true
-          
-      - name: Run pip-audit and save to file
-        run: pip-audit -r requirements.txt > audit-report.txt
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
 
+    - name: Install pip-audit
+      run: |
+        source venv/bin/activate
+        pip install pip-audit
 
-      - name: Commit audit report to repo
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add audit-report.txt
-          git commit -m "Add pip-audit report" || echo "No changes to commit"
-          git push || echo "No changes to push"
+    - name: Run pip-audit and save to file
+      run: |
+        source venv/bin/activate
+        pip-audit -r requirements.txt > audit-report.txt
+
+    - name: Upload audit report
+      uses: actions/upload-artifact@v4
+      with:
+        name: pip-audit-report
+        path: audit-report.txt
