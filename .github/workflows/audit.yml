@@ -34,7 +34,8 @@ jobs:
     - name: Run pip-audit and save to file
       run: |
         source venv/bin/activate
-        pip-audit -r requirements.txt --no-deps > audit-report.txt
+        pip-audit > audit-report.txt
+
 
     - name: Upload audit report
       uses: actions/upload-artifact@v4
