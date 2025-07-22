@@ -30,14 +30,14 @@
 
  [1mREPORT[0m 
 
-  Safety [1mv3.5.2[0m is scanning for [1mVulnerabilities[0m[1m...[0m
+  Safety [1mv3.6.0[0m is scanning for [1mVulnerabilities[0m[1m...[0m
 [1m  Scanning dependencies[0m in your [1mfiles:[0m
 
   -> requirements.txt
 
   Using [1mopen-source vulnerability database[0m
 [1m  Found and scanned 47 packages[0m
-  Timestamp [1m2025-07-02 05:06:53[0m
+  Timestamp [1m2025-07-22 05:29:15[0m
 [1m  0[0m[1m vulnerabilities reported[0m
 [1m  0[0m[1m vulnerabilities ignored[0m
 +==============================================================================+
