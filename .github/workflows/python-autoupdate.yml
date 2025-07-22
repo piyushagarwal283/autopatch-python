@@ -36,3 +36,11 @@ jobs:
           git add audit-report.txt
           git commit -m "Add: pip audit report [bot]" || echo "No changes to commit"
           git push
+        
+      - name: Run pip-audit in a temp environment
+        run: |
+          python -m venv audit-env
+          source audit-env/bin/activate
+          pip install pip-audit
+          pip-audit -r requirements.txt > audit-report.txt || true
+
