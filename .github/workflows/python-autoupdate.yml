@@ -1,43 +1,37 @@
 name: Auto Update Python Dependencies
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write  # ✅ THIS IS IMPORTANT for pushing changes
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install tools
+      - name: Install dependencies
         run: |
-          pip install pip-review safety
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Auto-update and scan
-        run: |
-          pip-review --auto
-          pip freeze > requirements.txt
-          safety check -r requirements.txt > report.txt
+      - name: Install pip-audit
+        run: pip install pip-audit
 
-      - name: Configure Git
+      - name: Run pip-audit and save to file
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+          pip-audit > audit-report.txt || true
 
-      - name: Commit & Push
+      - name: Commit audit report to repo
         run: |
-          git add requirements.txt report.txt
-          git commit -m "🤖 Auto update dependencies [bot]" || echo "No changes to commit"
-          git push origin main
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add audit-report.txt
+          git commit -m "Add: pip audit report [bot]" || echo "No changes to commit"
+          git push
